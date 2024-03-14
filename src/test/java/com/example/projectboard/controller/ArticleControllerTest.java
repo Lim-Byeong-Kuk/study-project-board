@@ -19,7 +19,7 @@ class ArticleControllerTest {
     public ArticleControllerTest(@Autowired MockMvc mvc) {
         this.mvc = mvc;
     }
-    @Disabled("구현 중")
+
     @DisplayName("[view][GET] 게시글 리스트 (게시판) 페이지 - 정상 호출")
     @Test
     void given_whenRequestingArticlesView_thenReturnsArticleView() throws Exception {
@@ -28,10 +28,11 @@ class ArticleControllerTest {
         // when & then
         mvc.perform(MockMvcRequestBuilders.get("/articles"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.TEXT_HTML))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(MockMvcResultMatchers.view().name("articles/index"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("articles"));
      }
+
     @Disabled("구현 중")
     @DisplayName("[view][GET] 게시글 상세 페이지 - 정상 호출")
     @Test
