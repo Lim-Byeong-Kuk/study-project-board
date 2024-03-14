@@ -42,7 +42,7 @@ class ArticleControllerTest {
         // when & then
         mvc.perform(MockMvcRequestBuilders.get("/articles/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.TEXT_HTML))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(MockMvcResultMatchers.view().name("articles/detail"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("article"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("articleComments"));
@@ -56,7 +56,7 @@ class ArticleControllerTest {
         // when & then
         mvc.perform(MockMvcRequestBuilders.get("/articles/search"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.TEXT_HTML))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(MockMvcResultMatchers.view().name("articles/search"));
     }
     @Disabled("구현 중")
@@ -68,7 +68,7 @@ class ArticleControllerTest {
         // when & then
         mvc.perform(MockMvcRequestBuilders.get("/articles/search-hashtag"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.TEXT_HTML))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(MockMvcResultMatchers.view().name("articles/search-hashtag"));
     }
 }
