@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
 @Table(indexes = {
         @Index(columnList = "title"),
         @Index(columnList = "hashtag"),
@@ -24,6 +24,10 @@ public class Article extends AuditingFields{
     private Long id;
 
     @Setter
+    @ManyToOne(optional = false)
+    private UserAccount userAccount;    // 유저 정보 (ID)
+
+    @Setter
     @Column(nullable = false)
     private String title; // 제목
 
@@ -35,21 +39,22 @@ public class Article extends AuditingFields{
     private String hashtag; // 해시태그
 
     @ToString.Exclude // 순환 참조 방지
-    @OrderBy("id") // 정렬 기준 id
+    @OrderBy("createdAt DESC") // 정렬 기준 시간정렬 내림차순
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     protected Article() {}
 
-    private Article(String title, String content, String hashtag) {
+    private Article(UserAccount userAccount, String title, String content, String hashtag) {
+        this.userAccount = userAccount;
         this.title = title;
         this.content = content;
         this.hashtag = hashtag;
     }
 
     // 팩토리 메서드
-    public static Article of(String title, String content, String hashtag) {
-        return new Article(title, content, hashtag);
+    public static Article of(UserAccount userAccount, String title, String content, String hashtag) {
+        return new Article(userAccount, title, content, hashtag);
     }
 
     /**
