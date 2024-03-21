@@ -69,14 +69,14 @@ class ArticleServiceTest {
         SearchType searchType = SearchType.TITLE;
         String searchKeyword = "title";
         Pageable pageable = Pageable.ofSize(20);
-        BDDMockito.given(articleRepository.findByTitle(searchKeyword, pageable)).willReturn(Page.empty());
+        BDDMockito.given(articleRepository.findByTitleContaining(searchKeyword, pageable)).willReturn(Page.empty());
 
         // when
         Page<ArticleDto> articles = sut.searchArticles(searchType, searchKeyword, pageable);
 
         // then
         assertThat(articles).isEmpty();
-        BDDMockito.then(articleRepository).should().findByTitle(searchKeyword, pageable);
+        BDDMockito.then(articleRepository).should().findByTitleContaining(searchKeyword, pageable);
     }
 
     @DisplayName("게시글을 조회하면, 게시글을 반환한다.")
@@ -121,9 +121,6 @@ class ArticleServiceTest {
     @DisplayName("게시글을 정보를 입력하면, 게시글을 생성한다.")
     @Test
     void givenArticleInfo_whenSavingArticle_thenSavesArticle() {
-        /**
-         *  유닛테스트
-         */
         // any() 만 쓰면 아무거나 가능, any(Type.class) 는 Type 만 가능
         // 코드에 명시적으로 어떤일이 일어날 것이라는 것을 표현해 주는것, (작동하는 코드가 아니다. 있느나마나 함)
         // given
@@ -159,6 +156,9 @@ class ArticleServiceTest {
     @DisplayName("없는 게시글의 수정 정보를 입력하면, 경고 로그를 찍고 아무 것도 하지 않는다.")
     @Test
     void givenNonexistenArticleInfo_whenUpdatingArticle_thenLogsWarningAndDoesNothing() {
+        /**
+         *  getReferenceById 는 Id 가 존재하지 않을 경우 EntityNotFoundException 을 던진다.
+         */
         // given
         ArticleDto dto = createArticleDto("새 타이틀", "새 내용", "#springboot");
         BDDMockito.given(articleRepository.getReferenceById(dto.id())).willThrow(EntityNotFoundException.class);
@@ -201,12 +201,12 @@ class ArticleServiceTest {
                 createUserAccount(),
                 "title",
                 "content",
-                "#Hashtag"
+                "#hashtag"
         );
     }
 
     private ArticleDto createArticleDto() {
-        return createArticleDto("title", "content", "#java");
+        return createArticleDto("title", "content", "#hashtag");
     }
 
     private ArticleDto createArticleDto(String title, String content, String hashtag) {
