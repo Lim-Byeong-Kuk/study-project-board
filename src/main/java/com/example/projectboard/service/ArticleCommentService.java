@@ -1,6 +1,7 @@
 package com.example.projectboard.service;
 
 import com.example.projectboard.dto.ArticleCommentDto;
+import com.example.projectboard.dto.ArticleDto;
 import com.example.projectboard.repository.ArticleCommentRepository;
 import com.example.projectboard.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,8 @@ public class ArticleCommentService {
     }
 
     public void deleteArticleComment(Long articleCommentId) {
+    }
+
+    public void saveArticleComment(ArticleCommentDto dto) {
     }
 }
