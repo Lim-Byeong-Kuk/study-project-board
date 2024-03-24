@@ -186,6 +186,21 @@ class ArticleServiceTest {
         BDDMockito.then(articleRepository).should().deleteById(articleId);
     }
 
+    @DisplayName("게시글 수를 조회하면, 게시글 수를 반환한다.")
+    @Test
+    void givenNothing_whenCountingArticles_thenReturnsArticleCount() {
+        // given
+        long expected = 0L;
+        BDDMockito.given(articleRepository.count()).willReturn(expected);
+
+        // when
+        long actual = sut.getArticleCount();
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+        BDDMockito.then(articleRepository).should().count();
+     }
+
     private UserAccount createUserAccount() {
         return UserAccount.of(
                 "lbk",

@@ -1,16 +1,38 @@
 <?xml version="1.0" ?>
 <thlogic>
-    <attr sel="#header" th:replace="header :: header" />
-    <attr sel="#footer" th:replace="footer :: footer" />
+  <attr sel="#header" th:replace="header :: header"/>
+  <attr sel="#footer" th:replace="footer :: footer"/>
 
-    <attr sel="#article-table">
-        <attr sel="tbody" th:remove="all-but-first"> <!-- 안에 원소를 첫번째꺼 빼고는 제거 하겠다는 의미 -->
-            <attr sel="tr[0]" th:each="article : ${articles}">  <!-- 하나 남은 원소를 잡아서 each 문 돌리면서 치환 -->
-                <attr sel="td.title/a" th:text="${article.title}" th:href="@{'/articles/' + ${article.id}}" />
-                <attr sel="td.hashtag" th:text="${article.hashtag}" />
-                <attr sel="td.user-id" th:text="${article.nickname}" />
-                <attr sel="td.created-at/time" th:datetime="${article.createdAt}" th:text="${#temporals.format(article.createdAt, 'yyyy-MM-dd')}" />
-            </attr>
-        </attr>
+  <attr sel="#article-table">
+    <attr sel="tbody" th:remove="all-but-first"> <!-- 안에 원소를 첫번째꺼 빼고는 제거 하겠다는 의미 -->
+      <attr sel="tr[0]" th:each="article : ${articles}">  <!-- 하나 남은 원소를 잡아서 each 문 돌리면서 치환 -->
+        <attr sel="td.title/a" th:text="${article.title}" th:href="@{'/articles/' + ${article.id}}"/>
+        <attr sel="td.hashtag" th:text="${article.hashtag}"/>
+        <attr sel="td.user-id" th:text="${article.nickname}"/>
+        <attr sel="td.created-at/time" th:datetime="${article.createdAt}" th:text="${#temporals.format(article.createdAt, 'yyyy-MM-dd')}"/>
+      </attr>
     </attr>
+  </attr>
+
+  <attr sel="#pagination">
+                                   <!-- Page 가 number 를 가지고 있다. articles 는 Page<ArticleResponse>-->
+      <attr sel="li[0]/a"
+            th:text="'previous'"
+            th:href="@{/articles(page=${articles.number - 1})}"
+            th:class="'page-link' + (${articles.number} <= 0 ? ' disabled' : '')"
+      />
+      <attr sel="li[1]" th:class="page-item" th:each="pageNumber : ${paginationBarNumbers}" >
+        <attr sel="a"
+              th:text="${pageNumber + 1}"
+              th:href="@{/articles(page=${pageNumber})}"
+              th:class="'page-link' + (${pageNumber} == ${articles.number} ? ' disabled' : '')"
+        />
+      </attr>
+      <attr sel="li[2]/a"
+            th:text="'next'"
+            th:href="@{/articles(page=${articles.number + 1})}"
+            th:class="'page-link' + (${articles.number} >= ${articles.totalPages - 1} ? ' disabled' : '')"
+      />
+
+  </attr>
 </thlogic>
