@@ -53,6 +53,8 @@
       </attr>
     </attr>
 
+    <attr sel="#write-article" th:href="@{/articles/form}" />
+
     <attr sel="#pagination">
       <!-- Page 가 number 를 가지고 있다. articles 는 Page<ArticleResponse>-->
       <attr sel="li[0]/a"
