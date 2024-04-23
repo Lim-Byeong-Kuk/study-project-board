@@ -21,6 +21,7 @@ public interface ArticleCommentRepository extends
     // findByArticle_Id : Article 안에 Id 로 조회한다는 의미
     // _ 를 이용해 연관관계 안으로 들어가는 것
     List<ArticleComment> findByArticle_Id(Long articleId);
+    void deleteByIdAndUserAccount_UserId(Long articleCommentId, String userId);
 
     @Override
     default void customize(QuerydslBindings bindings, QArticleComment root) {

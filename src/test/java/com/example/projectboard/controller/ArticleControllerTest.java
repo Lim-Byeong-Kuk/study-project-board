@@ -1,6 +1,7 @@
 package com.example.projectboard.controller;
 
 import com.example.projectboard.config.SecurityConfig;
+import com.example.projectboard.config.TestSecurityConfig;
 import com.example.projectboard.domain.constant.FormStatus;
 import com.example.projectboard.domain.constant.SearchType;
 import com.example.projectboard.dto.ArticleDto;
@@ -8,6 +9,7 @@ import com.example.projectboard.dto.ArticleWithCommentsDto;
 import com.example.projectboard.dto.UserAccountDto;
 import com.example.projectboard.dto.request.ArticleRequest;
 import com.example.projectboard.dto.response.ArticleResponse;
+import com.example.projectboard.dto.security.BoardPrincipal;
 import com.example.projectboard.service.ArticleService;
 import com.example.projectboard.service.PaginationService;
 import com.example.projectboard.util.FormDataEncoder;
@@ -25,6 +27,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -41,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 @DisplayName("View 컨트롤러 - 게시글")
-@Import({SecurityConfig.class, FormDataEncoder.class})
+@Import({TestSecurityConfig.class, FormDataEncoder.class})
 @WebMvcTest(ArticleController.class)
 class ArticleControllerTest {
 
@@ -107,7 +112,22 @@ class ArticleControllerTest {
         BDDMockito.then(paginationService).should().getPaginationBarNumbers(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt());
     }
 
-    @DisplayName("[view][GET] 게시글 페이지 - 정상 호출")
+    @DisplayName("[vew][GET} 게시글 페이지 - 인증 없을 땐 로그인 페이지로 이동")
+    @Test
+    void givenNothing_whenRequestingArticlePage_thenRedirectsToLoginPage() throws Exception {
+        // given
+        long articleId = 1L;
+        
+        // when & then
+        mvc.perform(MockMvcRequestBuilders.get("/articles/" + articleId))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+        BDDMockito.then(articleService).shouldHaveNoInteractions();
+        BDDMockito.then(articleService).shouldHaveNoInteractions();
+    }
+
+    @WithMockUser  // 유저 정보를 모킹해서 넣어준다.
+    @DisplayName("[view][GET] 게시글 페이지 - 정상 호출, 인증된 사용자")
     @Test
     void givenNothing_whenRequestingArticleView_thenReturnsArticleView() throws Exception {
         // given
@@ -226,6 +246,7 @@ class ArticleControllerTest {
         BDDMockito.then(paginationService).should().getPaginationBarNumbers(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt());
     }
 
+    @WithMockUser
     @DisplayName("[view][GET] 새 게시글 작성 페이지")
     @Test
     void givenNothing_whenRequesting_thenReturnsNewArticlePage() throws Exception {
@@ -239,6 +260,7 @@ class ArticleControllerTest {
                 .andExpect(MockMvcResultMatchers.model().attribute("formStatus", FormStatus.CREATE));
     }
 
+    @WithUserDetails(value = "lbkTest", userDetailsServiceBeanName = "userDetailsService", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("[view][POST] 새 게시글 등록 - 정상 호출")
     @Test
     void givenNewArticleInfo_whenRequesting_thenSavesNewArticle() throws Exception {
@@ -253,13 +275,27 @@ class ArticleControllerTest {
                                 .content(formDataEncoder.encode(articleRequest))
                                 .with(SecurityMockMvcRequestPostProcessors.csrf())
                 )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/articles"))
-                .andExpect(redirectedUrl("/articles"));
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(view().name("redirect:/articles"))
+                    .andExpect(redirectedUrl("/articles"));
         then(articleService).should().saveArticle(ArgumentMatchers.any(ArticleDto.class));
     }
+    
+    @DisplayName("[view][GET] 게시글 수정 페이지 - 인증 없을 땐 로그인 페이지로 이동")
+    @Test
+    void givenNothing_whenRequesting_thenRedirectsToLoginPage() throws Exception {
+        // given
+        long articleId = 1L;
+        
+        // when & then
+        mvc.perform(MockMvcRequestBuilders.get("/articles/" + articleId + "/form"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+        then(articleService).shouldHaveNoInteractions();
+    }
 
-    @DisplayName("[view][GET] 게시글 수정 페이지")
+    @WithMockUser
+    @DisplayName("[view][GET] 게시글 수정 페이지 - 정상호출, 인증된 사용자")
     @Test
     void givenNothing_whenRequesting_thenReturnsUpdatedArticlePage() throws Exception {
         // Given
@@ -277,6 +313,7 @@ class ArticleControllerTest {
         then(articleService).should().getArticle(articleId);
     }
 
+    @WithUserDetails(value = "lbkTest", userDetailsServiceBeanName = "userDetailsService", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("[view][POST] 게시글 수정 - 정상 호출")
     @Test
     void givenUpdatedArticleInfo_whenRequesting_thenUpdatesNewArticle() throws Exception {
@@ -298,12 +335,14 @@ class ArticleControllerTest {
         then(articleService).should().updateArticle(ArgumentMatchers.eq(articleId), ArgumentMatchers.any(ArticleDto.class));
     }
 
+    @WithUserDetails(value = "lbkTest", userDetailsServiceBeanName = "userDetailsService", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("[view][POST] 게시글 삭제 - 정상 호출")
     @Test
     void givenArticleIdToDelete_whenRequesting_thenDeletesArticle() throws Exception {
         // Given
         long articleId = 1L;
-        BDDMockito.willDoNothing().given(articleService).deleteArticle(articleId);
+        String userId = "lbkTest";
+        BDDMockito.willDoNothing().given(articleService).deleteArticle(articleId, userId);
 
         // When & Then
         mvc.perform(
@@ -311,10 +350,10 @@ class ArticleControllerTest {
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .with(SecurityMockMvcRequestPostProcessors.csrf())
                 )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/articles"))
-                .andExpect(redirectedUrl("/articles"));
-        then(articleService).should().deleteArticle(articleId);
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(view().name("redirect:/articles"))
+                    .andExpect(redirectedUrl("/articles"));
+        then(articleService).should().deleteArticle(articleId, userId);
     }
 
     private ArticleWithCommentsDto createArticleWithCommentsDto() {

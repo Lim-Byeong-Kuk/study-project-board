@@ -27,6 +27,8 @@ public interface ArticleRepository extends
     Page<Article> findByUserAccount_NicknameContaining(String nickname, Pageable pageable);
     Page<Article> findByHashtag(String hashtag, Pageable pageable);
 
+    void deleteByIdAndUserAccount_UserId(Long articleId, String userId);
+
     /**
      *  검색을 세부적으로 할 수 있게 도와줌
      *  자바8 이후로 인터페이스에 구현 메소드 가능
