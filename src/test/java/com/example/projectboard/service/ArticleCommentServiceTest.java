@@ -128,13 +128,14 @@ class ArticleCommentServiceTest {
     void givenArticleCommentId_whenDeletingArticleComment_thenDeletesArticleComment() {
         // given
         Long articleCommentId = 1L;
-        BDDMockito.willDoNothing().given(articleCommentRepository).deleteById(articleCommentId);
+        String userId = "lbk";
+        BDDMockito.willDoNothing().given(articleCommentRepository).deleteByIdAndUserAccount_UserId(articleCommentId, userId);
 
         // when
-        sut.deleteArticleComment(articleCommentId);
+        sut.deleteArticleComment(articleCommentId, userId);
 
         // then
-        BDDMockito.then(articleCommentRepository).should().deleteById(articleCommentId);
+        BDDMockito.then(articleCommentRepository).should().deleteByIdAndUserAccount_UserId(articleCommentId, userId);
     }
 
     private ArticleCommentDto createArticleCommentDto(String content) {
