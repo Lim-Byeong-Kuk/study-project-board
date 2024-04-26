@@ -1,6 +1,6 @@
 package com.example.projectboard.controller;
 
-import com.example.projectboard.config.SecurityConfig;
+import com.example.projectboard.config.TestSecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@Import(SecurityConfig.class)
+@DisplayName("View 루트 컨트롤러")
+@Import(TestSecurityConfig.class)
 @WebMvcTest(MainController.class)
 class MainControllerTest {
     private final MockMvc mvc;
@@ -20,6 +21,7 @@ class MainControllerTest {
         this.mvc = mvc;
     }
 
+    @DisplayName("[view][GET] 루트 페이지 -> 게시글 리스트 (게시판) 페이지 Redirection")
     @Test
     void givenNothing_whenRequestingRootPage_thenRedirectsToArticlesPage() throws Exception {
         // given
@@ -28,7 +30,7 @@ class MainControllerTest {
         mvc.perform(MockMvcRequestBuilders.get("/"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("forward:/articles"))
-                .andExpect(MockMvcResultMatchers.forwardedUrl("/articles"))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(MockMvcResultMatchers.forwardedUrl("/articles"));
     }
+
 }
