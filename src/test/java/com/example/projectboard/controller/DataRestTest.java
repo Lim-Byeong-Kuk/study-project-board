@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @AutoConfigureMockMvc   // SpringBootTest 는 MockMvc 의 존재를 모름
 @SpringBootTest
-public class DataRestTest {
+class DataRestTest {
 
     private final MockMvc mvc;
 
-    public DataRestTest(@Autowired MockMvc mvc) {
+    DataRestTest(@Autowired MockMvc mvc) {
         this.mvc = mvc;
     }
 
@@ -99,4 +99,5 @@ public class DataRestTest {
         mvc.perform(MockMvcRequestBuilders.delete("/api/userAccounts")).andExpect(MockMvcResultMatchers.status().isNotFound());
         mvc.perform(MockMvcRequestBuilders.head("/api/userAccounts")).andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
 }

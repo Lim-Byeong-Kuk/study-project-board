@@ -30,7 +30,7 @@ class JpaRepositoryTest {
     private final UserAccountRepository userAccountRepository;
 
 
-    public JpaRepositoryTest(
+    JpaRepositoryTest(
             @Autowired ArticleRepository articleRepository,
             @Autowired ArticleCommentRepository articleCommentRepository,
             @Autowired UserAccountRepository userAccountREpository
@@ -106,9 +106,9 @@ class JpaRepositoryTest {
 
     @EnableJpaAuditing
     @TestConfiguration
-    public static class TestJpaConfig {
+    static class TestJpaConfig {
         @Bean
-        public AuditorAware<String> auditorAware() {
+        AuditorAware<String> auditorAware() {
             return () -> Optional.of("lbk");
         }
     }
