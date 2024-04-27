@@ -60,4 +60,5 @@ public class UserAccount extends AuditingFields {
     public int hashCode() {
         return Objects.hash(userId);
     }
+
 }
