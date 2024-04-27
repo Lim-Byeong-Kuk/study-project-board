@@ -18,7 +18,6 @@ public record ArticleWithCommentsResponse(
         String userId,
         Set<ArticleCommentResponse> articleCommentsResponse
 ) {
-
     public static ArticleWithCommentsResponse of(Long id, String title, String content, String hashtag, LocalDateTime createdAt, String email, String nickname, String userId, Set<ArticleCommentResponse> articleCommentResponses) {
         return new ArticleWithCommentsResponse(id, title, content, hashtag, createdAt, email, nickname, userId, articleCommentResponses);
     }
@@ -43,4 +42,5 @@ public record ArticleWithCommentsResponse(
                         .collect(Collectors.toCollection(LinkedHashSet::new))
         );
     }
+
 }

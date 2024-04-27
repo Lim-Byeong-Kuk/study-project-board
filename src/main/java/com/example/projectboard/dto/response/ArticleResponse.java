@@ -34,4 +34,5 @@ public record ArticleResponse(
                 nickname
         );
     }
+
 }

@@ -24,4 +24,5 @@ public class ArticleRepositoryCustomImpl extends QuerydslRepositorySupport imple
 
         return query.fetch();
     }
+
 }

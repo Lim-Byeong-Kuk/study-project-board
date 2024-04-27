@@ -14,4 +14,5 @@ public class DataRestConfig {
                 config.exposeIdsFor(UserAccount.class)
         );
     }
+
 }
