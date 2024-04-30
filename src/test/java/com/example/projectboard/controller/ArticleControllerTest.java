@@ -5,6 +5,7 @@ import com.example.projectboard.domain.constant.FormStatus;
 import com.example.projectboard.domain.constant.SearchType;
 import com.example.projectboard.dto.ArticleDto;
 import com.example.projectboard.dto.ArticleWithCommentsDto;
+import com.example.projectboard.dto.HashtagDto;
 import com.example.projectboard.dto.UserAccountDto;
 import com.example.projectboard.dto.request.ArticleRequest;
 import com.example.projectboard.dto.response.ArticleResponse;
@@ -65,7 +66,7 @@ class ArticleControllerTest {
 
     @DisplayName("[view][GET] 게시글 리스트 (게시판) 페이지 - 정상 호출")
     @Test
-    void given_whenRequestingArticlesView_thenReturnsArticleView() throws Exception {
+    void givenNothing_whenRequestingArticlesView_thenReturnsArticleView() throws Exception {
         // given                                                // 필드 중 일부만 ArgumentMatcher 를 쓸 수 없다.
         BDDMockito.given(articleService.searchArticles(ArgumentMatchers.eq(null), ArgumentMatchers.eq(null), ArgumentMatchers.any(Pageable.class)))
                 .willReturn(Page.empty());
@@ -77,7 +78,9 @@ class ArticleControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(MockMvcResultMatchers.view().name("articles/index"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("articles"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("paginationBarNumbers"));
+                .andExpect(MockMvcResultMatchers.model().attributeExists("paginationBarNumbers"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("searchTypes"))
+                .andExpect(MockMvcResultMatchers.model().attribute("searchTypeHashtag", SearchType.HASHTAG));
         // should 는 1번 호출한다는 의미가 있음
         BDDMockito.then(articleService).should().searchArticles(ArgumentMatchers.eq(null), ArgumentMatchers.eq(null), ArgumentMatchers.any(Pageable.class));
         BDDMockito.then(paginationService).should().getPaginationBarNumbers(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt());
@@ -140,7 +143,8 @@ class ArticleControllerTest {
                 .andExpect(MockMvcResultMatchers.view().name("articles/detail"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("article"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("articleComments"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("totalCount"));
+                .andExpect(MockMvcResultMatchers.model().attribute("totalCount", totalCount))
+                .andExpect(MockMvcResultMatchers.model().attribute("searchTypeHashtag", SearchType.HASHTAG));
 
         BDDMockito.then(articleService).should().getArticleWithComments(articleId);
         BDDMockito.then(articleService).should().getArticleCount();
@@ -262,7 +266,7 @@ class ArticleControllerTest {
     @Test
     void givenNewArticleInfo_whenRequesting_thenSavesNewArticle() throws Exception {
         // Given
-        ArticleRequest articleRequest = ArticleRequest.of("new title", "new content", "#new");
+        ArticleRequest articleRequest = ArticleRequest.of("new title", "new content");
         BDDMockito.willDoNothing().given(articleService).saveArticle(ArgumentMatchers.any(ArticleDto.class));
 
         // When & Then
@@ -294,7 +298,7 @@ class ArticleControllerTest {
     @WithMockUser
     @DisplayName("[view][GET] 게시글 수정 페이지 - 정상호출, 인증된 사용자")
     @Test
-    void givenNothing_whenRequesting_thenReturnsUpdatedArticlePage() throws Exception {
+    void givenAuthorizedUser_whenRequesting_thenReturnsUpdatedArticlePage() throws Exception {
         // Given
         long articleId = 1L;
         ArticleDto dto = createArticleDto();
@@ -316,7 +320,7 @@ class ArticleControllerTest {
     void givenUpdatedArticleInfo_whenRequesting_thenUpdatesNewArticle() throws Exception {
         // Given
         long articleId = 1L;
-        ArticleRequest articleRequest = ArticleRequest.of("new title", "new content", "#new");
+        ArticleRequest articleRequest = ArticleRequest.of("new title", "new content");
         BDDMockito.willDoNothing().given(articleService).updateArticle(ArgumentMatchers.eq(articleId), ArgumentMatchers.any(ArticleDto.class));
 
         // When & Then
@@ -360,7 +364,7 @@ class ArticleControllerTest {
                 Set.of(),
                 "title",
                 "content",
-                "#java",
+                Set.of(HashtagDto.of("java")),
                 LocalDateTime.now(),
                 "lbk",
                 LocalDateTime.now(),
@@ -373,7 +377,7 @@ class ArticleControllerTest {
                 createUserAccountDto(),
                 "title",
                 "content",
-                "#java"
+                Set.of(HashtagDto.of("java"))
         );
     }
 
