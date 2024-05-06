@@ -98,10 +98,10 @@ class ArticleControllerTest {
 
         // when & then
         mvc.perform(
-                        MockMvcRequestBuilders.get("/articles")
-                                .queryParam("searchType", searchType.name())
-                                .queryParam("searchValue", searchValue)
-                )
+                MockMvcRequestBuilders.get("/articles")
+                        .queryParam("searchType", searchType.name())
+                        .queryParam("searchValue", searchValue)
+        )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(MockMvcResultMatchers.view().name("articles/index"))
@@ -231,9 +231,9 @@ class ArticleControllerTest {
 
         // when & then
         mvc.perform(
-                        MockMvcRequestBuilders.get("/articles/search-hashtag")
-                                .queryParam("searchValue", hashtag)
-                )
+                MockMvcRequestBuilders.get("/articles/search-hashtag")
+                        .queryParam("searchValue", hashtag)
+        )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(MockMvcResultMatchers.view().name("articles/search-hashtag"))
@@ -271,11 +271,11 @@ class ArticleControllerTest {
 
         // When & Then
         mvc.perform(
-                        MockMvcRequestBuilders.post("/articles/form")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(formDataEncoder.encode(articleRequest))
-                                .with(SecurityMockMvcRequestPostProcessors.csrf())
-                )
+                MockMvcRequestBuilders.post("/articles/form")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(formDataEncoder.encode(articleRequest))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+        )
                     .andExpect(status().is3xxRedirection())
                     .andExpect(view().name("redirect:/articles"))
                     .andExpect(redirectedUrl("/articles"));
@@ -325,11 +325,11 @@ class ArticleControllerTest {
 
         // When & Then
         mvc.perform(
-                        MockMvcRequestBuilders.post("/articles/" + articleId + "/form")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(formDataEncoder.encode(articleRequest))
-                                .with(SecurityMockMvcRequestPostProcessors.csrf())
-                )
+                MockMvcRequestBuilders.post("/articles/" + articleId + "/form")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(formDataEncoder.encode(articleRequest))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+        )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/articles/" + articleId))
                 .andExpect(redirectedUrl("/articles/" + articleId));
@@ -347,10 +347,10 @@ class ArticleControllerTest {
 
         // When & Then
         mvc.perform(
-                        MockMvcRequestBuilders.post("/articles/" + articleId + "/delete")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .with(SecurityMockMvcRequestPostProcessors.csrf())
-                )
+                MockMvcRequestBuilders.post("/articles/" + articleId + "/delete")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+        )
                     .andExpect(status().is3xxRedirection())
                     .andExpect(view().name("redirect:/articles"))
                     .andExpect(redirectedUrl("/articles"));
