@@ -248,7 +248,7 @@ class ArticleServiceTest {
 
     @DisplayName("게시글의 수정 정보를 입력하면, 게시글을 수정한다.")
     @Test
-    void givenModifiedInfo_whenUpdatingArticle_thenUpdatesArticle() {
+    void givenModifiedArticleInfo_whenUpdatingArticle_thenUpdatesArticle() {
         // given
         Article article = createArticle();
         ArticleDto dto = createArticleDto("새 타이틀", "새 내용 #springboot");
@@ -270,9 +270,9 @@ class ArticleServiceTest {
                 .hasFieldOrPropertyWithValue("title", dto.title())
                 .hasFieldOrPropertyWithValue("content", dto.content())
                 .extracting("hashtags", Assertions.as(InstanceOfAssertFactories.COLLECTION))
-                .hasSize(1)
-                .extracting("hashtagName")
-                .containsExactly("springboot");
+                    .hasSize(1)
+                    .extracting("hashtagName")
+                        .containsExactly("springboot");
 
         BDDMockito.then(articleRepository).should().getReferenceById(dto.id());
         BDDMockito.then(userAccountRepository).should().getReferenceById(dto.userAccountDto().userId());
@@ -381,7 +381,7 @@ class ArticleServiceTest {
 
     private UserAccount createUserAccount(String userId) {
         return UserAccount.of(
-                "userId",
+                userId,
                 "password",
                 "lbk@gmail.com",
                 "Lbk",
