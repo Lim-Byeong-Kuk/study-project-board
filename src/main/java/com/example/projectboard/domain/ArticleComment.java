@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import javax.persistence.*;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @ToString(callSuper = true)
@@ -29,20 +31,35 @@ public class ArticleComment extends AuditingFields{
     private UserAccount userAccount; // 유저 정보 (ID)
 
     @Setter
+    @Column(updatable = false) // 부모 댓글이 바뀔일은 없다
+    private Long parentCommentId; // 부모 댓글 ID
+
+    @ToString.Exclude
+    @OrderBy("createdAt ASC") // 정렬 규칙
+    @OneToMany(mappedBy = "parentCommentId", cascade = CascadeType.ALL)
+    private Set<ArticleComment> childComments = new LinkedHashSet<>();
+
+    @Setter
     @Column(nullable = false, length = 500)
     private String content; // 본문
 
     protected ArticleComment() {
     }
 
-    private ArticleComment(Article article, UserAccount userAccount, String content) {
+    private ArticleComment(Article article, UserAccount userAccount, Long parentCommentId, String content) {
         this.article = article;
         this.userAccount = userAccount;
+        this.parentCommentId = parentCommentId;
         this.content = content;
     }
 
     public static ArticleComment of(Article article, UserAccount userAccount, String content) {
-        return new ArticleComment(article, userAccount, content);
+        return new ArticleComment(article, userAccount,null, content);
+    }
+
+    public void addChildComment(ArticleComment child) { // 부모자식 관계를 세팅하는 메서드
+        child.setParentCommentId(this.getId());
+        this.getChildComments().add(child);
     }
 
     @Override
