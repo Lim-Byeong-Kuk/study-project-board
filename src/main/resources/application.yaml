@@ -46,13 +46,11 @@ spring:
             user-name-attribute: id
 
 
-#---
-#
-#spring:
-#  profiles.active: testdb
-##  config-activate.on-profile: testdb
-#  datasource:
-#    url: jdbc:h2:mem:board;mode=mysql
-#    driver-class-name: org.h2.Driver
-#  sql.init.mode: always
-#  test.database.replace: none
+---
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+  config:
+    activate:
+      on-profile: test
