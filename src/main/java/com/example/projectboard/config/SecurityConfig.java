@@ -34,6 +34,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .mvcMatchers("/api/**").permitAll() // /api 요청에 대해 인증 요구 안함
                         .mvcMatchers(
                                 HttpMethod.GET,
                                 "/",
@@ -49,6 +50,7 @@ public class SecurityConfig {
                                 .userService(oAuth2UserService)
                         )
                 )
+                .csrf(csrf -> csrf.ignoringAntMatchers("/api/**")) // /api 로 시작하는 모든 요청은 csrf 설정 보지 않겠다.
                 .build();
     }
 
